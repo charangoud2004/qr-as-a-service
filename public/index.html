@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    input[type="url"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    input[type="url"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+      color: #667eea;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .result {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #eee;
+    }
+    .result.show { display: block; }
+    .result img {
+      max-width: 300px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .download-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    .download-btn:hover {
+      background: #218838;
+    }
+    .error {
+      display: none;
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .error.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔗 QR Code Generator</h1>
+    <p class="subtitle">Convert any URL into a QR code instantly</p>
+    
+    <div class="error" id="error"></div>
+    
+    <form id="qrForm">
+      <div class="form-group">
+        <label for="url">Enter URL:</label>
+        <input 
+          type="url" 
+          id="url" 
+          placeholder="https://example.com" 
+          required
+        >
+      </div>
+      <button type="submit">Generate QR Code</button>
+    </form>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Generating...</p>
+    </div>
+    
+    <div class="result" id="result">
+      <img id="qrImage" alt="QR Code">
+      <br>
+      <a id="downloadBtn" class="download-btn" download="qrcode.png">⬇️ Download</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("qrForm");
+    const urlInput = document.getElementById("url");
+    const loading = document.getElementById("loading");
+    const result = document.getElementById("result");
+    const qrImage = document.getElementById("qrImage");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const errorDiv = document.getElementById("error");
+
+    const API_URL = "http://localhost:7071/api/generateQR";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorDiv.classList.remove("show");
+      errorDiv.textContent = "";
+      
+      const url = urlInput.value.trim();
+      if (!url) return;
+
+      loading.style.display = "block";
+      result.classList.remove("show");
+
+      try {
+        const response = await fetch(`${API_URL}?url=${encodeURIComponent(url)}`);
+        
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
+        // Get blob and create object URL
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        
+        qrImage.src = objectUrl;
+        downloadBtn.href = objectUrl;
+        downloadBtn.download = `qr-${Date.now()}.png`;
+        
+        result.classList.add("show");
+
+      } catch (error) {
+        errorDiv.textContent = `Error: ${error.message}`;
+        errorDiv.classList.add("show");
+      } finally {
+        loading.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
