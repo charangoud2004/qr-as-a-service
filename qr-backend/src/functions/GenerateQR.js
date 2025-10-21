@@ -55,7 +55,7 @@ app.http("generateQR", {
         margin: 2
       });
 
-      // Upload to Blob Storage
+      // Upload to Blob Storage in azuze
       const connectionString = process.env.QrStorageConnectionString;
       const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
       const containerClient = blobServiceClient.getContainerClient("qr-codes");
@@ -71,7 +71,7 @@ app.http("generateQR", {
         blobHTTPHeaders: { blobContentType: 'image/png' }
       });
 
-      // Get public URL
+      // Get public URL 
       const blobUrl = blockBlobClient.url;
 
       // Return blob URL
