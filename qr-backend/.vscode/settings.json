@@ -1,5 +1,5 @@
 {
-  "azureFunctions.deploySubpath": "qr-backend",
+  "azureFunctions.deploySubpath": ".",
   "azureFunctions.postDeployTask": "npm install (functions)",
   "azureFunctions.projectLanguage": "JavaScript",
   "azureFunctions.projectRuntime": "~4",
