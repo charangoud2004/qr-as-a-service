@@ -4,85 +4,223 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --accent: #764ba2;
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --soft: #f5f7ff;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient);
+  color: var(--text);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
 }
 
+/* #root is the body's flex child. Without a full width it shrinks to its
+   content, and .container can never reach its max-width. */
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Same width as one column of the two-card layout below (960 - 24 gap) / 2,
+   so the form card keeps its size when the result card appears. */
 .container {
   width: 100%;
-  max-width: 500px;
+  max-width: 468px;
+}
+
+/* Once a QR is generating or generated: form on the left, result on the right */
+.container.has-result {
+  max-width: 960px;
+  display: grid;
+  /* minmax(0, 1fr): keep columns equal even though the one-line link is long */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 40px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(30, 20, 80, 0.18);
+  padding: 36px;
+}
+
+/* ---------- Form card ---------- */
+.form-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.logo {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--primary-dark);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.logo svg {
+  width: 22px;
+  height: 22px;
 }
 
 h1 {
-  color: #333;
-  font-size: 28px;
-  margin-bottom: 10px;
-  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .subtitle {
-  color: #666;
+  color: var(--muted);
   font-size: 14px;
-  text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
-/* Form */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 label {
   display: block;
-  color: #333;
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 13px;
   margin-bottom: 8px;
-  font-size: 14px;
 }
 
 input[type='url'] {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 6px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
   font-size: 14px;
-  transition: border-color 0.2s;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type='url']::placeholder {
+  color: #9ca3af;
 }
 
 input[type='url']:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
 }
 
+/* "How it works": short numbered list below the form */
+.how-it-works {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.steps-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--primary-dark);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+/* Sits at the bottom of the card */
+.footer-note {
+  margin-top: auto;
+  padding-top: 24px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.footer-note a {
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
 button {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
+  font-family: inherit;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Flat, solid buttons with no hover effects */
+.btn-primary {
+  background: var(--primary-dark);
+  color: #fff;
+  border: 1.5px solid transparent; /* same height as .btn-secondary */
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--primary-dark);
+  border: 1.5px solid var(--primary-dark);
 }
 
 button:disabled {
@@ -90,152 +228,170 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Error */
+button:focus-visible {
+  outline: 3px solid rgba(102, 126, 234, 0.5);
+  outline-offset: 2px;
+}
+
+/* ---------- Error ---------- */
 .error {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
   font-size: 14px;
-  border: 1px solid #f5c6cb;
+  border: 1px solid #fecaca;
 }
 
-/* Loading */
-.loading {
+/* ---------- Result card ---------- */
+.result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin: 30px 0;
+  scroll-margin-top: 16px; /* gap above the card when auto-scrolled into view */
 }
 
-.spinner {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading p {
-  color: #667eea;
-  font-weight: 500;
-}
-
-/* Result */
-.result {
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 2px solid #eee;
-  text-align: center;
-}
-
-.result h2 {
-  color: #333;
+.result-card h2 {
   font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
   margin-bottom: 20px;
+}
+
+.qr-frame {
+  background: var(--soft);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 12px;
 }
 
 .qr-image {
-  max-width: 300px;
+  display: block;
   width: 100%;
-  border: 2px solid #ddd;
+  max-width: 220px;
   border-radius: 8px;
-  margin-bottom: 15px;
+  background: #fff;
 }
 
 .timestamp {
-  color: #999;
+  color: #9ca3af;
   font-size: 12px;
   margin-bottom: 20px;
 }
 
-/* Button Group */
 .button-group {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
-.btn-download,
-.btn-copy {
-  flex: 1;
-  padding: 10px;
-  background: #28a745;
-  font-size: 14px;
-}
-
-.btn-download:hover,
-.btn-copy:hover {
-  background: #218838;
-}
-
-.btn-copy {
-  background: #007bff;
-}
-
-.btn-copy:hover {
-  background: #0056b3;
-}
-
-/* QR URL */
-.qr-url {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 6px;
-  margin-top: 20px;
-  border: 1px solid #dee2e6;
-}
-
-.qr-url .label {
-  color: #666;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
+.action-error {
+  width: 100%;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #991b1b;
   text-align: left;
 }
 
-.qr-url a {
-  color: #667eea;
-  text-decoration: none;
-  word-break: break-all;
+.action-error a {
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.qr-url {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.link-label {
   font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.qr-url a {
+  display: block;
+  color: var(--primary-dark);
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .qr-url a:hover {
   text-decoration: underline;
 }
 
-/* Responsive */
+/* ---------- Loading ---------- */
+.loading {
+  margin: auto 0;
+  text-align: center;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--soft);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 14px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+/* Desktop: both cards share one fixed height, so nothing resizes or shifts
+   when the QR card appears. Tallest content: result card with the download
+   error showing (~582px). */
+@media (min-width: 861px) {
+  .form-card,
+  .result-card {
+    min-height: 590px;
+  }
+}
+
+/* ---------- Responsive ---------- */
+/* Tablets and phones: stack the two cards, form first */
+@media (max-width: 860px) {
+  .container.has-result {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 480px;
+  }
+}
+
 @media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
   .card {
-    padding: 30px 20px;
+    padding: 28px 20px;
   }
 
   h1 {
-    font-size: 24px;
-  }
-
-  button {
-    font-size: 14px;
+    font-size: 21px;
   }
 
   .button-group {
     flex-direction: column;
-  }
-
-  .btn-download,
-  .btn-copy {
-    width: 100%;
   }
 }
